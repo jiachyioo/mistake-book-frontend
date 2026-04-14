@@ -3,68 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>數位錯題本助理</title>
+    <title>數位錯題本儀表板</title>
     <style>
         :root {
-            --primary-color: #4A90E2;
-            --success-color: #2ECC71;
-            --bg-color: #F5F7FA;
-            --card-bg: #FFFFFF;
-            --text-color: #333333;
+            --primary-blue: #4A90E2;
+            --light-blue: #DCE8F6;
+            --bg-color: #F4F7FB;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --border-color: #E2E8F0;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-color); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
-        .app-container { background-color: var(--card-bg); width: 100%; max-width: 480px; padding: 30px 20px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-        h2 { text-align: center; margin-bottom: 24px; color: var(--primary-color); }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-weight: bold; }
-        input[type="text"], select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; }
-        .file-upload-wrapper { border: 2px dashed #cbd5e1; border-radius: 8px; padding: 30px 20px; text-align: center; background-color: #f8fafc; cursor: pointer; }
-        .file-upload-wrapper input[type="file"] { display: none; }
-        .submit-btn { width: 100%; padding: 14px; background-color: var(--primary-color); color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .submit-btn:disabled { background-color: #a0aec0; }
-        #statusMessage { margin-top: 20px; text-align: center; font-weight: bold; font-size: 0.95rem; white-space: pre-line; line-height: 1.5; color: var(--primary-color); }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); padding: 20px; display: flex; justify-content: center; }
+        
+        .dashboard-container { max-width: 800px; width: 100%; }
+        
+        /* 頂部資訊列 */
+        .header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; }
+        .header-left h1 { font-size: 1.5rem; margin-bottom: 5px; }
+        .header-left p { color: var(--text-muted); font-size: 0.9rem; }
+        .header-stats { display: flex; gap: 20px; text-align: center; }
+        .stat-item p { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; }
+        .stat-item h3 { font-size: 1.2rem; }
+
+        /* 主工作區卡片 */
+        .main-card { background: white; border-radius: 16px; padding: 40px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); text-align: center; margin-bottom: 20px; min-height: 400px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        
+        /* 拖曳上傳區 */
+        .upload-area { border: 2px dashed #CBD5E1; border-radius: 12px; width: 100%; max-width: 500px; padding: 60px 20px; cursor: pointer; transition: all 0.3s; margin-bottom: 20px; }
+        .upload-area:hover { border-color: var(--primary-blue); background-color: #F8FAFC; }
+        .upload-icon { font-size: 3rem; color: var(--primary-blue); margin-bottom: 15px; }
+        .upload-area input[type="file"] { display: none; }
+        
+        .action-btn { background-color: var(--light-blue); color: var(--primary-blue); border: none; padding: 12px 30px; border-radius: 20px; font-weight: bold; font-size: 1rem; cursor: pointer; transition: 0.3s; }
+        .action-btn:hover { background-color: var(--primary-blue); color: white; }
+
+        /* 底部導覽列 */
+        .nav-controls { background: transparent; display: flex; flex-direction: column; gap: 15px; }
+        .nav-row { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .nav-label { font-weight: bold; width: 80px; }
+        
+        .tab-btn { padding: 8px 16px; border: none; background: transparent; color: var(--text-muted); cursor: pointer; border-radius: 8px; transition: 0.3s; }
+        .tab-btn.active { background-color: var(--light-blue); color: var(--primary-blue); font-weight: bold; border: 1px solid var(--primary-blue); }
+        
+        select { padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 8px; outline: none; }
+
+        #statusMessage { margin-top: 15px; font-weight: bold; color: var(--primary-blue); }
     </style>
 </head>
 <body>
 
-<div class="app-container">
-    <h2>數位錯題本 - 上傳新題</h2>
-    <form id="mistakeForm">
-        <div class="form-group">
-            <label>科目</label>
-            <select id="subjectSelect" required>
-                <option value="" disabled selected>請選擇科目</option>
-                <option value="math">數學</option>
-                <option value="physics">物理</option>
-                <option value="chemistry">化學</option>
-            </select>
+<div class="dashboard-container">
+    <header class="header">
+        <div class="header-left">
+            <h1>數位錯題本儀表板</h1>
+            <p>歡迎回來，今天也要努力學習喔！</p>
         </div>
-        <div class="form-group">
-            <label>主題 / 章節</label>
-            <input type="text" id="topicInput" placeholder="例如：一元二次方程式" required>
+        <div class="header-stats">
+            <div class="stat-item"><p>總題數</p><h3>6</h3></div>
+            <div class="stat-item"><p>待複習</p><h3>12 題</h3></div>
+            <div class="stat-item"><p>AI 準確率</p><h3>98%</h3></div>
         </div>
-        <div class="form-group">
-            <label>錯題照片</label>
-            <div class="file-upload-wrapper" onclick="document.getElementById('fileInput').click()">
-                <input type="file" id="fileInput" accept="image/jpeg, image/png" required>
-                <span id="fileNameDisplay">點擊開啟相機或相簿 (支援 JPG, PNG)</span>
-            </div>
+    </header>
+
+    <main class="main-card">
+        <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+            <div class="upload-icon">☁️</div>
+            <h3 id="fileNameDisplay">點擊或拖曳照片至此處</h3>
+            <p style="color: #94A3B8; margin-top: 8px; font-size: 0.9rem;">(包含自動壓縮功能)</p>
+            <input type="file" id="fileInput" accept="image/jpeg, image/png">
         </div>
-        <button type="submit" class="submit-btn" id="submitBtn">上傳並處理</button>
-    </form>
-    <div id="statusMessage"></div>
+        
+        <button class="action-btn" id="uploadBtn">模擬照片上傳</button>
+        <div id="statusMessage"></div>
+    </main>
+
+    <nav class="nav-controls">
+        <div class="nav-row">
+            <span class="nav-label">切換分頁</span>
+            <button class="tab-btn active">上傳新題</button>
+            <button class="tab-btn">歷史錯題</button>
+            <button class="tab-btn">隨機複習</button>
+            <span class="nav-label" style="margin-left: auto; width: auto;">篩選科目</span>
+            <select><option>全部</option><option>數學</option><option>化學</option></select>
+        </div>
+        <div class="nav-row">
+            <span class="nav-label">複習範圍</span>
+            <button class="tab-btn">近一週</button>
+            <button class="tab-btn active">近一個月</button>
+            <button class="tab-btn">所有時間</button>
+        </div>
+    </nav>
 </div>
 
 <script>
-    // 1. 資安防禦：XSS 過濾
-    function sanitizeHTML(str) {
-        return str.replace(/[^\w. \u4e00-\u9fa5]/gi, function (c) {
-            return '&#' + c.charCodeAt(0) + ';';
-        });
-    }
-
-    // 2. 核心效能：前端圖片壓縮 (Canvas)
+    // 核心效能：前端圖片壓縮 (保留先前的邏輯)
     async function compressImage(file, maxWidth = 1500, quality = 0.75) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -92,55 +125,51 @@
         });
     }
 
-    // UI 互動：顯示選擇的檔案名稱
-    document.getElementById('fileInput').addEventListener('change', function(e) {
+    // UI 互動：選擇檔案後更新文字
+    const fileInput = document.getElementById('fileInput');
+    const fileNameDisplay = document.getElementById('fileNameDisplay');
+    
+    fileInput.addEventListener('change', function(e) {
         if (e.target.files.length > 0) {
-            document.getElementById('fileNameDisplay').textContent = `已選擇：${e.target.files[0].name}`;
+            fileNameDisplay.textContent = `已選擇：${e.target.files[0].name}`;
+            fileNameDisplay.style.color = '#4A90E2';
         }
     });
 
-    // 3. 表單送出與處理流程
-    document.getElementById('mistakeForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        const file = document.getElementById('fileInput').files[0];
-        const submitBtn = document.getElementById('submitBtn');
+    // 觸發上傳與壓縮模擬
+    document.getElementById('uploadBtn').addEventListener('click', async function() {
+        const file = fileInput.files[0];
         const statusMsg = document.getElementById('statusMessage');
 
-        if (!file) { statusMsg.textContent = '請上傳照片！'; return; }
-        if (file.size > 10 * 1024 * 1024) { statusMsg.textContent = '原圖不能超過 10MB！'; return; }
+        if (!file) { statusMsg.textContent = '⚠️ 請先選擇一張照片！'; statusMsg.style.color = 'red'; return; }
 
-        submitBtn.disabled = true;
+        this.disabled = true;
+        this.textContent = '處理中...';
         
         try {
-            // 步驟 A：前端壓縮
-            statusMsg.textContent = '🔄 步驟 1/3：正在壓縮圖片...';
+            statusMsg.style.color = '#4A90E2';
+            statusMsg.textContent = '1. 正在進行前端圖片壓縮...';
             const compressedFile = await compressImage(file);
             
-            // 計算壓縮成效
             const originalSize = (file.size / 1024 / 1024).toFixed(2);
             const newSize = (compressedFile.size / 1024 / 1024).toFixed(2);
-            const logMsg = `✅ 壓縮完成！\n原圖：${originalSize} MB ➡️ 壓縮後：${newSize} MB`;
-            statusMsg.textContent = logMsg + '\n🔄 步驟 2/3：準備上傳至伺服器... (模擬)';
-
-            // 模擬網路延遲
-            await new Promise(r => setTimeout(r, 1500));
             
-            // 步驟 B：模擬後端處理
-            statusMsg.textContent = logMsg + '\n🔄 步驟 3/3：Mathpix 辨識與寫入資料庫... (模擬)';
-            await new Promise(r => setTimeout(r, 1500));
-
-            // 成功結算
-            statusMsg.textContent = logMsg + '\n🎉 成功！已寫入錯題本。';
+            await new Promise(r => setTimeout(r, 1000));
+            statusMsg.textContent = `✅ 壓縮完成！(${originalSize}MB ➡️ ${newSize}MB)\n2. 準備呼叫後端 API...`;
+            
+            await new Promise(r => setTimeout(r, 1000));
+            statusMsg.textContent = '🎉 模擬完成！隨時可與後端串接。';
             statusMsg.style.color = '#2ECC71';
             
         } catch (error) {
-            statusMsg.textContent = `❌ 發生錯誤：${error.message}`;
-            statusMsg.style.color = '#E74C3C';
+            statusMsg.textContent = `❌ 錯誤：${error.message}`;
+            statusMsg.style.color = 'red';
         } finally {
-            submitBtn.disabled = false;
+            this.disabled = false;
+            this.textContent = '模擬照片上傳';
         }
     });
 </script>
+
 </body>
 </html>
